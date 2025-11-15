@@ -108,3 +108,38 @@ export const deleteContact = async (id: number) => {
   const db = await getDB();
   await db.runAsync("DELETE FROM contacts WHERE id = ?", [id]);
 };
+
+/**
+ * IMPORT CONTACTS FROM API (BATCH INSERT, BỎ QUA TRÙNG SỐ ĐIỆN THOẠI)
+ */
+export const importContactsFromAPI = async (contacts: Array<{
+  name: string;
+  phone: string;
+  email: string;
+}>) => {
+  const db = await getDB();
+  let importedCount = 0;
+  let skippedCount = 0;
+
+  for (const contact of contacts) {
+    // Kiểm tra phone đã tồn tại chưa
+    const existing = await db.getFirstAsync<{ id: number }>(
+      "SELECT id FROM contacts WHERE phone = ?",
+      [contact.phone]
+    );
+
+    if (!existing && contact.phone) {
+      // Nếu chưa tồn tại và có phone → insert
+      await db.runAsync(
+        "INSERT INTO contacts (name, phone, email, created_at) VALUES (?, ?, ?, ?)",
+        [contact.name, contact.phone, contact.email, Date.now()]
+      );
+      importedCount++;
+    } else {
+      // Nếu đã tồn tại hoặc không có phone → bỏ qua
+      skippedCount++;
+    }
+  }
+
+  return { importedCount, skippedCount };
+};

@@ -1,15 +1,24 @@
 // app/index.tsx
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { View, Text, FlatList, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, TextInput, ActivityIndicator, Platform, Alert } from "react-native";
 import { Link, useFocusEffect } from "expo-router";
 import { useContacts } from "../hooks/useContacts";
 import { initDB } from "../lib/db";
 import ContactItem from "../components/ContactItem";
 
 export default function Home() {
-  const { contacts, loadContacts, toggleFavorite, deleteContact } = useContacts();
+  const { contacts, loadContacts, toggleFavorite, deleteContact, importFromAPI } = useContacts();
   const [searchQuery, setSearchQuery] = useState("");
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+
+  const showAlert = (title: string, message: string) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}: ${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };
 
   useEffect(() => {
     // tạo bảng + seed từ Câu 2
@@ -47,6 +56,27 @@ export default function Home() {
 
     return result;
   }, [contacts, searchQuery, showFavoritesOnly]);
+
+  // Import contacts từ API
+  const handleImportFromAPI = async () => {
+    setIsImporting(true);
+    try {
+      const API_URL = "https://68e8a248f2707e6128cb83ca.mockapi.io/contacts";
+      const result = await importFromAPI(API_URL);
+      
+      showAlert(
+        "Import thành công",
+        `Đã import ${result.importedCount} liên hệ mới. Bỏ qua ${result.skippedCount} liên hệ trùng lặp.`
+      );
+    } catch (error) {
+      showAlert(
+        "Lỗi import",
+        `Không thể import từ API: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+    } finally {
+      setIsImporting(false);
+    }
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F3F4F6' }}>
@@ -98,37 +128,78 @@ export default function Home() {
           )}
         </View>
 
-        {/* Favorite Filter Button */}
-        <TouchableOpacity
-          onPress={() => setShowFavoritesOnly(!showFavoritesOnly)}
-          style={{
-            backgroundColor: showFavoritesOnly ? '#FEF3C7' : '#FFFFFF',
-            borderRadius: 12,
-            paddingHorizontal: 16,
-            paddingVertical: 10,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderWidth: 2,
-            borderColor: showFavoritesOnly ? '#F59E0B' : '#E5E7EB',
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.05,
-            shadowRadius: 2,
-            elevation: 1,
-          }}
-        >
-          <Text style={{ fontSize: 16, marginRight: 6 }}>
-            {showFavoritesOnly ? '⭐' : '☆'}
-          </Text>
-          <Text style={{ 
-            fontSize: 14, 
-            fontWeight: '600',
-            color: showFavoritesOnly ? '#D97706' : '#6B7280'
-          }}>
-            {showFavoritesOnly ? 'Chỉ yêu thích' : 'Tất cả'}
-          </Text>
-        </TouchableOpacity>
+        {/* Filter and Import Buttons */}
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          {/* Favorite Filter Button */}
+          <TouchableOpacity
+            onPress={() => setShowFavoritesOnly(!showFavoritesOnly)}
+            style={{
+              flex: 1,
+              backgroundColor: showFavoritesOnly ? '#FEF3C7' : '#FFFFFF',
+              borderRadius: 12,
+              paddingHorizontal: 16,
+              paddingVertical: 10,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderWidth: 2,
+              borderColor: showFavoritesOnly ? '#F59E0B' : '#E5E7EB',
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.05,
+              shadowRadius: 2,
+              elevation: 1,
+            }}
+          >
+            <Text style={{ fontSize: 16, marginRight: 6 }}>
+              {showFavoritesOnly ? '⭐' : '☆'}
+            </Text>
+            <Text style={{ 
+              fontSize: 14, 
+              fontWeight: '600',
+              color: showFavoritesOnly ? '#D97706' : '#6B7280'
+            }}>
+              {showFavoritesOnly ? 'Yêu thích' : 'Tất cả'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Import from API Button */}
+          <TouchableOpacity
+            onPress={handleImportFromAPI}
+            disabled={isImporting}
+            style={{
+              flex: 1,
+              backgroundColor: isImporting ? '#E5E7EB' : '#10B981',
+              borderRadius: 12,
+              paddingHorizontal: 16,
+              paddingVertical: 10,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              shadowColor: "#10B981",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: isImporting ? 0 : 0.3,
+              shadowRadius: 3,
+              elevation: isImporting ? 0 : 3,
+            }}
+          >
+            {isImporting ? (
+              <>
+                <ActivityIndicator size="small" color="#6B7280" style={{ marginRight: 8 }} />
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#6B7280' }}>
+                  Đang tải...
+                </Text>
+              </>
+            ) : (
+              <>
+                <Text style={{ fontSize: 16, marginRight: 6 }}>📥</Text>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: '#FFFFFF' }}>
+                  Import API
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Add Button - Floating Style */}
