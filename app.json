@@ -15,5 +15,13 @@
     "expo-sqlite"
   ],
   "name": "NguyenThanhBinh_22660171_TK",
-  "slug": "NguyenThanhBinh_22660171_TK"
+  "slug": "NguyenThanhBinh_22660171_TK",
+  "extra": {
+    "router": {
+      "origin": "https://n"
+    },
+    "eas": {
+      "projectId": "cead4ab7-caa5-4d22-9652-ddc3d3efe11f"
+    }
+  }
 }
