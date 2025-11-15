@@ -1,10 +1,11 @@
 // app/index.tsx
 import { useEffect } from "react";
 import { View, Text, FlatList, TouchableOpacity } from "react-native";
-import { Link } from "expo-router";
+import { Link, useFocusEffect } from "expo-router";
 import { useContacts } from "../hooks/useContacts";
 import { initDB } from "../lib/db";
 import ContactItem from "../components/ContactItem";
+import { useCallback } from "react";
 
 export default function Home() {
   const { contacts, loadContacts } = useContacts();
@@ -16,6 +17,13 @@ export default function Home() {
     // load danh sách
     loadContacts();
   }, []);
+
+  // Reload contacts khi màn hình được focus (quay về từ modal)
+  useFocusEffect(
+    useCallback(() => {
+      loadContacts();
+    }, [])
+  );
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F3F4F6' }}>
