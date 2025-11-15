@@ -1,6 +1,6 @@
 // hooks/useContacts.ts
 import { useState } from "react";
-import { getDB, insertContact, toggleFavorite as dbToggleFavorite } from "../lib/db";
+import { getDB, insertContact, toggleFavorite as dbToggleFavorite, updateContact as dbUpdateContact } from "../lib/db";
 
 export const useContacts = () => {
   const [contacts, setContacts] = useState([]);
@@ -25,10 +25,23 @@ export const useContacts = () => {
     await loadContacts(); // Refresh danh sách
   };
 
+  const updateContact = async (
+    id: number,
+    contact: {
+      name: string;
+      phone: string;
+      email: string;
+    }
+  ) => {
+    await dbUpdateContact(id, contact);
+    await loadContacts(); // Refresh danh sách
+  };
+
   return {
     contacts,
     loadContacts,
     addContact,
     toggleFavorite,
+    updateContact,
   };
 };

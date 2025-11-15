@@ -1,5 +1,6 @@
 // components/ContactItem.tsx
 import { View, Text, TouchableOpacity } from "react-native";
+import { Link } from "expo-router";
 
 export default function ContactItem({ item, onToggleFavorite }: any) {
   return (
@@ -89,6 +90,39 @@ export default function ContactItem({ item, onToggleFavorite }: any) {
               <Text style={{ color: '#6B7280', fontSize: 12 }}>{item.email}</Text>
             </View>
           ) : null}
+
+          {/* Edit Button */}
+          <Link 
+            href={{
+              pathname: "/modal/edit-contact-modal",
+              params: {
+                id: item.id,
+                name: item.name,
+                phone: item.phone || "",
+                email: item.email || ""
+              }
+            }}
+            asChild
+          >
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#3B82F6',
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+                borderRadius: 8,
+                marginTop: 12,
+                shadowColor: "#3b82f6",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.2,
+                shadowRadius: 3,
+                elevation: 2,
+              }}
+            >
+              <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 'bold', textAlign: 'center' }}>
+                ✏️ Sửa
+              </Text>
+            </TouchableOpacity>
+          </Link>
         </View>
       </View>
     </View>
