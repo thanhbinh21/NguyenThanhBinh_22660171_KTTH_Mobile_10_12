@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { useContacts } from "../../hooks/useContacts";
 
@@ -11,16 +11,24 @@ export default function ContactModal() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
 
+  const showAlert = (title: string, message: string) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}: ${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };
+
   const handleSave = async () => {
     // Validate: name không rỗng
     if (!name.trim()) {
-      Alert.alert("Lỗi", "Tên không được để trống!");
+      showAlert("Lỗi", "Tên không được để trống!");
       return;
     }
 
     // Validate: email phải chứa @ nếu không rỗng
     if (email.trim() && !email.includes("@")) {
-      Alert.alert("Lỗi", "Email phải chứa ký tự @!");
+      showAlert("Lỗi", "Email phải chứa ký tự @!");
       return;
     }
 

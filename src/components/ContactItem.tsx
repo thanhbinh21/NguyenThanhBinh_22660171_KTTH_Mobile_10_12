@@ -1,8 +1,33 @@
 // components/ContactItem.tsx
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Alert, Platform } from "react-native";
 import { Link } from "expo-router";
 
-export default function ContactItem({ item, onToggleFavorite }: any) {
+export default function ContactItem({ item, onToggleFavorite, onDelete }: any) {
+  const handleDelete = () => {
+    // Sử dụng window.confirm cho web, Alert cho native
+    if (Platform.OS === 'web') {
+      const confirmed = window.confirm(`Bạn có chắc muốn xóa liên hệ "${item.name}"?`);
+      if (confirmed) {
+        onDelete(item.id);
+      }
+    } else {
+      Alert.alert(
+        "Xác nhận xóa",
+        `Bạn có chắc muốn xóa liên hệ "${item.name}"?`,
+        [
+          {
+            text: "Hủy",
+            style: "cancel"
+          },
+          {
+            text: "Xóa",
+            style: "destructive",
+            onPress: () => onDelete(item.id)
+          }
+        ]
+      );
+    }
+  };
   return (
     <View style={{
       backgroundColor: '#F9FAFB',
@@ -91,27 +116,49 @@ export default function ContactItem({ item, onToggleFavorite }: any) {
             </View>
           ) : null}
 
-          {/* Edit Button */}
-          <Link 
-            href={{
-              pathname: "/modal/edit-contact-modal",
-              params: {
-                id: item.id,
-                name: item.name,
-                phone: item.phone || "",
-                email: item.email || ""
-              }
-            }}
-            asChild
-          >
+          {/* Action Buttons */}
+          <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
+            {/* Edit Button */}
+            <Link 
+              href={{
+                pathname: "/modal/edit-contact-modal",
+                params: {
+                  id: item.id,
+                  name: item.name,
+                  phone: item.phone || "",
+                  email: item.email || ""
+                }
+              }}
+              asChild
+              style={{ flex: 1 }}
+            >
+              <TouchableOpacity
+                style={{
+                  backgroundColor: '#3B82F6',
+                  paddingVertical: 8,
+                  borderRadius: 8,
+                  shadowColor: "#3b82f6",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 3,
+                  elevation: 2,
+                }}
+              >
+                <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 'bold', textAlign: 'center' }}>
+                  ✏️ Sửa
+                </Text>
+              </TouchableOpacity>
+            </Link>
+
+            {/* Delete Button */}
             <TouchableOpacity
+              onPress={handleDelete}
               style={{
-                backgroundColor: '#3B82F6',
-                paddingHorizontal: 16,
+                flex: 1,
+                backgroundColor: '#EF4444',
                 paddingVertical: 8,
                 borderRadius: 8,
-                marginTop: 12,
-                shadowColor: "#3b82f6",
+                shadowColor: "#ef4444",
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.2,
                 shadowRadius: 3,
@@ -119,10 +166,10 @@ export default function ContactItem({ item, onToggleFavorite }: any) {
               }}
             >
               <Text style={{ color: '#FFFFFF', fontSize: 14, fontWeight: 'bold', textAlign: 'center' }}>
-                ✏️ Sửa
+                🗑️ Xóa
               </Text>
             </TouchableOpacity>
-          </Link>
+          </View>
         </View>
       </View>
     </View>

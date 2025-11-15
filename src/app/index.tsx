@@ -8,7 +8,7 @@ import ContactItem from "../components/ContactItem";
 import { useCallback } from "react";
 
 export default function Home() {
-  const { contacts, loadContacts, toggleFavorite } = useContacts();
+  const { contacts, loadContacts, toggleFavorite, deleteContact } = useContacts();
 
   useEffect(() => {
     // tạo bảng + seed từ Câu 2
@@ -107,6 +107,7 @@ export default function Home() {
                   <ContactItem 
                     item={item} 
                     onToggleFavorite={toggleFavorite}
+                    onDelete={deleteContact}
                   />
                 )}
                 showsVerticalScrollIndicator={false}

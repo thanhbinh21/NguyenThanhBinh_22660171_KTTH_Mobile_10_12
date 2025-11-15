@@ -100,3 +100,11 @@ export const updateContact = async (
     [contact.name, contact.phone, contact.email, id]
   );
 };
+
+/**
+ * DELETE CONTACT (XÓA LIÊN HỆ)
+ */
+export const deleteContact = async (id: number) => {
+  const db = await getDB();
+  await db.runAsync("DELETE FROM contacts WHERE id = ?", [id]);
+};
