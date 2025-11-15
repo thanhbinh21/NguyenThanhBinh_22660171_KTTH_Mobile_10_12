@@ -26,13 +26,13 @@ export default function Home() {
 
     // load danh sách
     loadContacts();
-  }, []);
+  }, [loadContacts]); // Fix: Add loadContacts to deps
 
   // Reload contacts khi màn hình được focus (quay về từ modal)
   useFocusEffect(
     useCallback(() => {
       loadContacts();
-    }, [])
+    }, [loadContacts]) // Fix: Add loadContacts to deps
   );
 
   // Filter contacts với useMemo để tối ưu performance
@@ -57,8 +57,8 @@ export default function Home() {
     return result;
   }, [contacts, searchQuery, showFavoritesOnly]);
 
-  // Import contacts từ API
-  const handleImportFromAPI = async () => {
+  // Import contacts từ API - wrapped với useCallback
+  const handleImportFromAPI = useCallback(async () => {
     setIsImporting(true);
     try {
       const API_URL = "https://68e8a248f2707e6128cb83ca.mockapi.io/contacts";
@@ -76,7 +76,7 @@ export default function Home() {
     } finally {
       setIsImporting(false);
     }
-  };
+  }, [importFromAPI]); // Fix: Add importFromAPI to deps
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F3F4F6' }}>

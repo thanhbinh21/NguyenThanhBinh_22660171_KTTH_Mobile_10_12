@@ -1,31 +1,39 @@
 // hooks/useContacts.ts
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { getDB, insertContact, toggleFavorite as dbToggleFavorite, updateContact as dbUpdateContact, deleteContact as dbDeleteContact, importContactsFromAPI as dbImportContactsFromAPI } from "../lib/db";
 
+/**
+ * Custom hook quản lý tất cả operations của contacts
+ * Bao gồm: load, insert, update, delete, search, import
+ */
 export const useContacts = () => {
   const [contacts, setContacts] = useState([]);
 
-  const loadContacts = async () => {
+  // Load contacts từ database - wrapped với useCallback
+  const loadContacts = useCallback(async () => {
     const db = await getDB();
     const rows = await db.getAllAsync("SELECT * FROM contacts ORDER BY name ASC");
     setContacts(rows);
-  };
+  }, []);
 
-  const addContact = async (contact: {
+  // Thêm contact mới - wrapped với useCallback
+  const addContact = useCallback(async (contact: {
     name: string;
     phone: string;
     email: string;
   }) => {
     await insertContact(contact);
     await loadContacts(); // Refresh danh sách
-  };
+  }, [loadContacts]);
 
-  const toggleFavorite = async (id: number) => {
+  // Toggle favorite status - wrapped với useCallback
+  const toggleFavorite = useCallback(async (id: number) => {
     await dbToggleFavorite(id);
     await loadContacts(); // Refresh danh sách
-  };
+  }, [loadContacts]);
 
-  const updateContact = async (
+  // Update contact - wrapped với useCallback
+  const updateContact = useCallback(async (
     id: number,
     contact: {
       name: string;
@@ -35,14 +43,16 @@ export const useContacts = () => {
   ) => {
     await dbUpdateContact(id, contact);
     await loadContacts(); // Refresh danh sách
-  };
+  }, [loadContacts]);
 
-  const deleteContact = async (id: number) => {
+  // Delete contact - wrapped với useCallback
+  const deleteContact = useCallback(async (id: number) => {
     await dbDeleteContact(id);
     await loadContacts(); // Refresh danh sách
-  };
+  }, [loadContacts]);
 
-  const importFromAPI = async (apiUrl: string) => {
+  // Import từ API - wrapped với useCallback
+  const importFromAPI = useCallback(async (apiUrl: string) => {
     try {
       // Fetch data từ API
       const response = await fetch(apiUrl);
@@ -69,7 +79,7 @@ export const useContacts = () => {
       console.error("Import error:", error);
       throw error;
     }
-  };
+  }, [loadContacts]);
 
   return {
     contacts,

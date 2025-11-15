@@ -28,31 +28,35 @@ export default function ContactItem({ item, onToggleFavorite, onDelete }: any) {
       );
     }
   };
+
+  // Favorite contacts có màu và style khác biệt
+  const isFavorite = item.favorite === 1;
+  
   return (
     <View style={{
-      backgroundColor: '#F9FAFB',
+      backgroundColor: isFavorite ? '#FEF9C3' : '#F9FAFB', // Highlight màu vàng nhạt cho favorite
       borderRadius: 16,
       marginBottom: 12,
       padding: 16,
-      borderWidth: 1,
-      borderColor: '#F3F4F6',
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.08,
-      shadowRadius: 4,
-      elevation: 2,
+      borderWidth: isFavorite ? 2 : 1,
+      borderColor: isFavorite ? '#F59E0B' : '#F3F4F6', // Border vàng cho favorite
+      shadowColor: isFavorite ? "#F59E0B" : "#000",
+      shadowOffset: { width: 0, height: isFavorite ? 2 : 1 },
+      shadowOpacity: isFavorite ? 0.2 : 0.08,
+      shadowRadius: isFavorite ? 5 : 4,
+      elevation: isFavorite ? 4 : 2,
     }}>
       <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-        {/* Avatar Circle */}
+        {/* Avatar Circle - màu vàng cho favorite */}
         <View style={{
-          backgroundColor: '#3B82F6',
+          backgroundColor: isFavorite ? '#F59E0B' : '#3B82F6',
           width: 48,
           height: 48,
           borderRadius: 24,
           alignItems: 'center',
           justifyContent: 'center',
           marginRight: 12,
-          shadowColor: "#3b82f6",
+          shadowColor: isFavorite ? "#F59E0B" : "#3b82f6",
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.3,
           shadowRadius: 3,
