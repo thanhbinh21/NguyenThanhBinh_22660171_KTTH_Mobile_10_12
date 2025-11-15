@@ -59,3 +59,26 @@ export const insertContact = async (contact: {
   );
   return result.lastInsertRowId;
 };
+
+/**
+ * TOGGLE FAVORITE (0 ↔ 1)
+ */
+export const toggleFavorite = async (id: number) => {
+  const db = await getDB();
+  // Lấy giá trị favorite hiện tại
+  const contact = await db.getFirstAsync<{ favorite: number }>(
+    "SELECT favorite FROM contacts WHERE id = ?",
+    [id]
+  );
+  
+  // Toggle: nếu là 1 thì thành 0, nếu là 0 thì thành 1
+  const newFavorite = contact?.favorite === 1 ? 0 : 1;
+  
+  // Update trong database
+  await db.runAsync(
+    "UPDATE contacts SET favorite = ? WHERE id = ?",
+    [newFavorite, id]
+  );
+  
+  return newFavorite;
+};

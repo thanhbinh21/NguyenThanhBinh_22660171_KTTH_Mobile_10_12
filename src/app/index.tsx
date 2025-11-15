@@ -8,7 +8,7 @@ import ContactItem from "../components/ContactItem";
 import { useCallback } from "react";
 
 export default function Home() {
-  const { contacts, loadContacts } = useContacts();
+  const { contacts, loadContacts, toggleFavorite } = useContacts();
 
   useEffect(() => {
     // tạo bảng + seed từ Câu 2
@@ -103,7 +103,12 @@ export default function Home() {
               <FlatList
                 data={contacts}
                 keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => <ContactItem item={item} />}
+                renderItem={({ item }) => (
+                  <ContactItem 
+                    item={item} 
+                    onToggleFavorite={toggleFavorite}
+                  />
+                )}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 20 }}
               />

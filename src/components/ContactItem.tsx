@@ -1,7 +1,7 @@
 // components/ContactItem.tsx
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 
-export default function ContactItem({ item }: any) {
+export default function ContactItem({ item, onToggleFavorite }: any) {
   return (
     <View style={{
       backgroundColor: '#F9FAFB',
@@ -40,12 +40,20 @@ export default function ContactItem({ item }: any) {
         {/* Contact Info */}
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1F2937' }}>{item.name}</Text>
-            {item.favorite === 1 && (
-              <View style={{ backgroundColor: '#FEF3C7', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 }}>
-                <Text style={{ color: '#D97706', fontSize: 12 }}>⭐ Yêu thích</Text>
-              </View>
-            )}
+            <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1F2937', flex: 1 }}>{item.name}</Text>
+            
+            {/* Star Icon - Clickable */}
+            <TouchableOpacity 
+              onPress={() => onToggleFavorite(item.id)}
+              style={{
+                padding: 4,
+                marginLeft: 8,
+              }}
+            >
+              <Text style={{ fontSize: 28 }}>
+                {item.favorite === 1 ? '⭐' : '☆'}
+              </Text>
+            </TouchableOpacity>
           </View>
           
           {item.phone ? (
